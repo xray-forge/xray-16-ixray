@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
 #include <sys/stat.h>
 
 #ifdef _WIN32
@@ -79,7 +80,7 @@
 typedef struct dir_data {
 	int  closed;
 #ifdef _WIN32
-	long hFile;
+	intptr_t hFile;
 	char pattern[MAX_DIR_LENGTH + 1];
 #else
 	DIR* dir;
@@ -422,7 +423,7 @@ static int dir_iter(lua_State* L) {
 	luaL_argcheck(L, !d->closed, 1, "closed directory");
 #ifdef _WIN32
 	if (d->hFile == 0L) { /* first entry */
-		if ((d->hFile = (long)_findfirst(d->pattern, &c_file)) == -1L) {
+		if ((d->hFile = _findfirst(d->pattern, &c_file)) == -1) {
 			lua_pushnil(L);
 			lua_pushstring(L, strerror(errno));
 			return 2;
