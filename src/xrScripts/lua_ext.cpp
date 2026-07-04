@@ -146,9 +146,9 @@ int get_random(lua_State* L)
     {
         if (++current_index == random_index)
         {
-            lua_pushvalue(L, -2); // Ключ
-            lua_pushvalue(L, -1); // Значение
-            return 2;
+            lua_pushvalue(L, -2); // key -> now on top; value shifts to -2
+            lua_pushvalue(L, -2); // value (was -1, now -2 after the push above)
+            return 2; // returns (key, value)
         }
         lua_pop(L, 1);
     }
