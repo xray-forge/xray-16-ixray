@@ -78,6 +78,21 @@ void CScriptStorage::reinit	()
 #ifdef XRGAME_EXPORTS
 	lua_init_ext(lua());
 #endif
+
+	// Adds gamedata folder as module root for lua `require` and allows usage of built-in lua module system.
+	// Notes:
+	// - Does not resolve files inside archived game files
+	// Example:
+	// `local example = require("scripts.folder.file")` tries to import `gamedata\scripts\folder\file.script`
+	{
+		string_path gamedataPath;
+		string_path packagePath;
+
+		FS.update_path(gamedataPath, "$game_data$", "?.script;");
+		xr_sprintf(packagePath, "package.path = package.path .. [[%s]]", gamedataPath);
+
+		luaL_dostring(lua(), packagePath);
+	}
 }
 
 int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
